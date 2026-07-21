@@ -1,6 +1,6 @@
 using AutoMapper;
-using proyecto_alumnos.DTO;
-using proyecto_alumnos.Models;
+using proyecto_alumnos.Core.Application.DTOs;
+using proyecto_alumnos.Core.Domain.Entities;
 
 namespace proyecto_alumnos.Shared
 {

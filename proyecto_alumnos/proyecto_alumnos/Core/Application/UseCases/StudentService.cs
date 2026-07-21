@@ -1,9 +1,9 @@
-using proyecto_alumnos.DTO;
-using proyecto_alumnos.Repository.IRepository;
-using proyecto_alumnos.Service.IService;
+using proyecto_alumnos.Core.Application.DTOs;
+using proyecto_alumnos.Core.Application.Ports.In;
+using proyecto_alumnos.Core.Application.Ports.Out;
 using proyecto_alumnos.Shared;
 
-namespace proyecto_alumnos.Service
+namespace proyecto_alumnos.Core.Application.UseCases
 {
     public class StudentService(IStudentRepository studentRepository) : IStudentService
     {

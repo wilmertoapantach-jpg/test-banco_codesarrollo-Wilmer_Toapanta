@@ -1,4 +1,4 @@
-namespace proyecto_alumnos.Models
+namespace proyecto_alumnos.Core.Domain.Entities
 {
     public class Student
     {

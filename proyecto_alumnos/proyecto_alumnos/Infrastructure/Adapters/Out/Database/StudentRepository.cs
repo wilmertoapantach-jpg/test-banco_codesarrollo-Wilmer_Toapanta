@@ -1,11 +1,11 @@
 using AutoMapper;
 using LinqKit;
-using proyecto_alumnos.DTO;
-using proyecto_alumnos.Models;
-using proyecto_alumnos.Repository.IRepository;
+using proyecto_alumnos.Core.Application.DTOs;
+using proyecto_alumnos.Core.Application.Ports.Out;
+using proyecto_alumnos.Core.Domain.Entities;
 using proyecto_alumnos.Shared;
 
-namespace proyecto_alumnos.Repository
+namespace proyecto_alumnos.Infrastructure.Adapters.Out.Database
 {
     public class StudentRepository(IMapper mapper) : IStudentRepository
     {

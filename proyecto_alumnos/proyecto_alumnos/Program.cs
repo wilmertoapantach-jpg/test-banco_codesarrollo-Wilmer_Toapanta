@@ -1,8 +1,8 @@
 using Microsoft.OpenApi.Models;
-using proyecto_alumnos.Repository;
-using proyecto_alumnos.Repository.IRepository;
-using proyecto_alumnos.Service;
-using proyecto_alumnos.Service.IService;
+using proyecto_alumnos.Core.Application.Ports.In;
+using proyecto_alumnos.Core.Application.Ports.Out;
+using proyecto_alumnos.Core.Application.UseCases;
+using proyecto_alumnos.Infrastructure.Adapters.Out.Database;
 using proyecto_alumnos.Shared;
 
 var builder = WebApplication.CreateBuilder(args);

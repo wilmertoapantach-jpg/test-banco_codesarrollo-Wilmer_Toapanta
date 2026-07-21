@@ -1,4 +1,4 @@
-namespace proyecto_alumnos.DTO
+namespace proyecto_alumnos.Core.Application.DTOs
 {
     public class StudentFilterDTO
     {
