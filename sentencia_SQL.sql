@@ -1,8 +1,3 @@
---select * from [dbo].[tipo_garantias];
---select * from [dbo].[credito];
---select * from [dbo].[cuota_credito];
-
-
 SELECT 
     -- Banda 1: De 1 a 30 días de mora
     ISNULL(SUM(CASE 
