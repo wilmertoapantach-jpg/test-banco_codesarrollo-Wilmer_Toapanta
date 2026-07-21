@@ -1,0 +1,26 @@
+@proyecto_alumnos_HostAddress = http://localhost:5246
+
+### Listar todos los alumnos (Inicial: 6 alumnos)
+POST {{proyecto_alumnos_HostAddress}}/api/Student/ListAllStudents
+Content-Type: application/json
+
+{}
+
+### Listar alumnos con paginación
+POST {{proyecto_alumnos_HostAddress}}/api/Student/ListStudents
+Content-Type: application/json
+
+{
+  "pageNumber": 1,
+  "pageSize": 5
+}
+
+### Guardar/Crear un nuevo alumno
+POST {{proyecto_alumnos_HostAddress}}/api/Student/SaveStudent
+Content-Type: application/json
+
+{
+  "name": "Carlos Gomez",
+  "isActive": true,
+  "description": "Alumno destacado en programación"
+}
