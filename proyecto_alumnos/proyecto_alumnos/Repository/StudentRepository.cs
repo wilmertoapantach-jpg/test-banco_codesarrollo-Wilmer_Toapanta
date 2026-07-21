@@ -1,4 +1,5 @@
 using AutoMapper;
+using LinqKit;
 using proyecto_alumnos.DTO;
 using proyecto_alumnos.Models;
 using proyecto_alumnos.Repository.IRepository;
@@ -6,9 +7,9 @@ using proyecto_alumnos.Shared;
 
 namespace proyecto_alumnos.Repository
 {
-    public class StudentRepository : IStudentRepository
+    public class StudentRepository(IMapper mapper) : IStudentRepository
     {
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper = mapper;
 
         // Simulación de Base de Datos en memoria (Lista en memoria compartida)
         private static readonly List<Student> _students = new()
@@ -23,11 +24,12 @@ namespace proyecto_alumnos.Repository
 
         private static readonly object _lock = new();
 
-        public StudentRepository(IMapper mapper)
-        {
-            _mapper = mapper;
-        }
 
+        /// <summary>
+        /// Verifica si un estudiante con el ID proporcionado existe en la lista de estudiantes.
+        /// </summary>
+        /// <param name="id">ID del estudiante a verificar.</param>
+        /// <returns>Retorna true si el estudiante existe, de lo contrario false.</returns>
         public Task<bool> ExistsStudent(int id)
         {
             lock (_lock)
@@ -36,24 +38,31 @@ namespace proyecto_alumnos.Repository
                 return Task.FromResult(exists);
             }
         }
-
+        /// <summary>
+        /// Crea un nuevo estudiante en la lista de estudiantes.
+        /// </summary>
+        /// <param name="request">Información del estudiante a crear.</param>
+        /// <returns>Retorna el DTO del estudiante creado.</returns>
         public Task<StudentResponseDTO> CreateStudent(StudentRequestDTO request)
         {
             lock (_lock)
             {
                 var entity = _mapper.Map<Student>(request);
-                
+
                 // Generar nuevo ID autoincremental
                 int newId = _students.Count > 0 ? _students.Max(s => s.Id) + 1 : 1;
                 entity.Id = newId;
-
                 _students.Add(entity);
-
                 var response = _mapper.Map<StudentResponseDTO>(entity);
                 return Task.FromResult(response);
             }
         }
-
+        /// <summary>
+        /// Actualiza la información de un estudiante existente en la lista de estudiantes.
+        /// </summary>
+        /// <param name="request">Información del estudiante a actualizar.</param>
+        /// <returns>Retorna el DTO del estudiante actualizado.</returns>
+        /// <exception cref="Exception"></exception>
         public Task<StudentResponseDTO> UpdateStudent(StudentRequestDTO request)
         {
             lock (_lock)
@@ -72,33 +81,27 @@ namespace proyecto_alumnos.Repository
                 return Task.FromResult(response);
             }
         }
-
+        /// <summary>
+        /// Retorna una lista paginada de estudiantes según los filtros proporcionados en el objeto StudentFilterDTO.
+        /// </summary>
+        /// <param name="request">Objeto con los filtros de búsqueda.</param>
+        /// <returns>Retorna una lista paginada de estudiantes.</returns>
         public Task<PageResponseDTO<StudentResponseDTO>> ListStudents(StudentFilterDTO request)
         {
             lock (_lock)
             {
                 IEnumerable<Student> query = _students;
 
-                if (request.Id.HasValue && request.Id > 0)
-                {
-                    query = query.Where(s => s.Id == request.Id.Value);
-                }
-
-                if (!string.IsNullOrWhiteSpace(request.Name))
-                {
-                    query = query.Where(s => s.Name.Contains(request.Name, StringComparison.OrdinalIgnoreCase));
-                }
-
-                if (request.IsActive.HasValue)
-                {
-                    query = query.Where(s => s.IsActive == request.IsActive.Value);
-                }
+                var predicate = PredicateBuilder.New<Student>(true);
+                if (request.Id.HasValue && request.Id > 0) predicate = predicate.And(s => s.Id == request.Id.Value);
+                if (!string.IsNullOrWhiteSpace(request.Name)) predicate = predicate.And(s => s.Name.Contains(request.Name, StringComparison.OrdinalIgnoreCase));
+                if (request.IsActive.HasValue) predicate = predicate.And(s => s.IsActive == request.IsActive.Value);
 
                 var count = query.Count();
                 var pageNumber = request.PageNumber > 0 ? request.PageNumber : 1;
                 var pageSize = request.PageSize > 0 ? request.PageSize : 10;
 
-                var items = query
+                var items = query.Where(predicate)
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToList();
@@ -114,24 +117,22 @@ namespace proyecto_alumnos.Repository
                 return Task.FromResult(pageResponse);
             }
         }
-
+        /// <summary>
+        /// Recupera todos los estudiantes según los filtros proporcionados en el objeto StudentAllFilterDTO.
+        /// </summary>
+        /// <param name="request">Objeto con los filtros de búsqueda.</param>
+        /// <returns>Retorna una lista completa de todos los estudiantes.</returns>
         public Task<List<StudentResponseDTO>> ListAllStudents(StudentAllFilterDTO request)
         {
             lock (_lock)
             {
                 IEnumerable<Student> query = _students;
+                var predicate = PredicateBuilder.New<Student>(true);
 
-                if (!string.IsNullOrWhiteSpace(request.Name))
-                {
-                    query = query.Where(s => s.Name.Contains(request.Name, StringComparison.OrdinalIgnoreCase));
-                }
+                if (!string.IsNullOrWhiteSpace(request.Name)) predicate = predicate.And(s => s.Name.Contains(request.Name, StringComparison.OrdinalIgnoreCase));
+                if (request.IsActive.HasValue) predicate = predicate.And(s => s.IsActive == request.IsActive.Value);
 
-                if (request.IsActive.HasValue)
-                {
-                    query = query.Where(s => s.IsActive == request.IsActive.Value);
-                }
-
-                var items = query.ToList();
+                var items = query.Where(predicate).ToList();
                 var result = _mapper.Map<List<StudentResponseDTO>>(items);
                 return Task.FromResult(result);
             }

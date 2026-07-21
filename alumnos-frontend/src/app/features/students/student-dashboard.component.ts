@@ -17,7 +17,6 @@ import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-
 import { StudentService } from '../../core/services/student.service';
 import { Student } from '../../core/interface/student.interface';
 

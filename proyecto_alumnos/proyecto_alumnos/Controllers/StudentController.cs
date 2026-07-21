@@ -8,14 +8,9 @@ namespace proyecto_alumnos.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StudentController : ControllerBase
+    public class StudentController(IStudentService studentService) : ControllerBase
     {
-        private readonly IStudentService _studentService;
-
-        public StudentController(IStudentService studentService)
-        {
-            _studentService = studentService;
-        }
+        private readonly IStudentService _studentService = studentService;
 
         /// <summary>
         /// Crea o actualiza un alumno según el valor del campo <c>Id</c>.
