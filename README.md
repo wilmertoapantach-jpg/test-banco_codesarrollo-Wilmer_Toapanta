@@ -10,7 +10,6 @@ Asegúrate de contar con las siguientes herramientas instaladas antes de ejecuta
 
 * **Backend:** .NET 9 SDK / Visual Studio 2022
 * **Frontend:** Node.js (v18+) & Angular CLI (v21)
-* **Base de Datos:** SQL Server
 
 ---
 
