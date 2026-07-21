@@ -1,0 +1,138 @@
+<div class="p-6">
+  <p-toast></p-toast>
+
+  <h1 class="text-3xl font-bold mb-6">Gestión de Estudiantes</h1>
+
+  <!-- Top Buttons -->
+  <div class="flex gap-4 mb-4">
+    <p-button label="Nuevo Estudiante" icon="pi pi-plus" (onClick)="openAddModal()"></p-button>
+    <p-button
+      label="Ordenar Alfabéticamente"
+      icon="pi pi-sort-alpha-down"
+      severity="secondary"
+      (onClick)="sortStudentsAlphabetically()"
+    ></p-button>
+  </div>
+
+  <!-- Grid View -->
+  <div class="card mb-6">
+    <p-table
+      [value]="students"
+      [paginator]="true"
+      [rows]="10"
+      [lazy]="true"
+      [totalRecords]="totalRecords"
+      [loading]="loading"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      (onLazyLoad)="onLazyLoad($event)"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Activo</th>
+          <th>Descripción</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-student>
+        <tr>
+          <td>{{ student.id }}</td>
+          <td>{{ student.name }}</td>
+          <td>
+            <i
+              class="pi"
+              [ngClass]="{
+                'text-green-500 pi-check-circle': student.isActive,
+                'text-red-500 pi-times-circle': !student.isActive,
+              }"
+            ></i>
+          </td>
+          <td>{{ student.description }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Selection Area -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Listbox DISPONIBLES -->
+    <div class="card flex flex-col gap-2">
+      <label class="font-bold">DISPONIBLES (Doble click para mover)</label>
+      <p-listbox
+        [options]="availableStudents"
+        [(ngModel)]="selectedAvailableStudent"
+        optionLabel="name"
+        [listStyle]="{ 'max-height': '250px' }"
+        [style]="{ width: '100%' }"
+        emptyMessage="No hay estudiantes disponibles"
+      >
+        <ng-template let-student pTemplate="item">
+          <div class="w-full" (dblclick)="onAvailableStudentDoubleClick($event, student)">
+            {{ student.name }}
+          </div>
+        </ng-template>
+      </p-listbox>
+    </div>
+
+    <!-- Dropdown SELECCIONADOS -->
+    <div class="card flex flex-col gap-2">
+      <label class="font-bold">SELECCIONADOS</label>
+      <p-select
+        [options]="chosenStudents"
+        [(ngModel)]="selectedChosenStudent"
+        optionLabel="name"
+        placeholder="Seleccione un estudiante"
+        [style]="{ width: '100%' }"
+      >
+      </p-select>
+    </div>
+
+    <!-- Description Textbox -->
+    <div class="card flex flex-col gap-2">
+      <label class="font-bold">Descripción del Seleccionado</label>
+      <textarea
+        pInputTextarea
+        [rows]="5"
+        [readonly]="true"
+        [value]="selectedChosenStudent?.description || ''"
+        class="w-full bg-gray-100"
+        placeholder="La descripción aparecerá aquí..."
+      ></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<p-dialog
+  header="Nuevo Estudiante"
+  [(visible)]="showAddModal"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+>
+  <form [formGroup]="studentForm" (ngSubmit)="saveStudent()" class="flex flex-col gap-4 mt-4">
+    <div class="flex flex-col gap-2">
+      <label for="name">Nombre</label>
+      <input id="name" type="text" pInputText formControlName="name" />
+    </div>
+
+    <div class="flex items-center gap-2">
+      <p-checkbox inputId="isActive" [binary]="true" formControlName="isActive"></p-checkbox>
+      <label for="isActive">Activo</label>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="description">Descripción</label>
+      <textarea id="description" pInputTextarea formControlName="description" rows="3"></textarea>
+    </div>
+
+    <div class="flex justify-end gap-2 mt-4">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        severity="secondary"
+        (onClick)="showAddModal = false"
+      ></p-button>
+      <p-button label="Guardar" icon="pi pi-check" type="submit"></p-button>
+    </div>
+  </form>
+</p-dialog>
